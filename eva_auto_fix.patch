@@ -1,0 +1,931 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 4f47137..c97859f 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -37,4 +37,6 @@ jobs:
+ 
+       - name: Auto-fix and create PR if test fails
+         if: failure()
+-        run: cargo run -p eva-tools -- create-fix-pr
++        env:
++          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
++        run: cargo run -p eva-tools -- create-fix-pr --ci
+diff --git a/Cargo.lock b/Cargo.lock
+index a94458b..f8f08e8 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -23,7 +23,7 @@ version = "0.8.11"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "e89da841a80418a9b391ebaea17f5c112ffaaa96f621d2c285b5174da76b9011"
+ dependencies = [
+- "cfg-if",
++ "cfg-if 1.0.0",
+  "once_cell",
+  "version_check",
+  "zerocopy",
+@@ -78,7 +78,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "8d82cb332cdfaed17ae235a638438ac4d4839913cc2af585c3c6746e8f8bee1a"
+ dependencies = [
+  "addr2line",
+- "cfg-if",
++ "cfg-if 1.0.0",
+  "libc",
+  "miniz_oxide",
+  "object",
+@@ -125,6 +125,12 @@ dependencies = [
+  "shlex",
+ ]
+ 
++[[package]]
++name = "cfg-if"
++version = "0.1.10"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4785bdd1c96b2a846b2bd7cc02e86b6b3dbf14e7e53446c4f54c92a361040822"
++
+ [[package]]
+ name = "cfg-if"
+ version = "1.0.0"
+@@ -161,6 +167,17 @@ version = "0.8.7"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
+ 
++[[package]]
++name = "cron"
++version = "0.12.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "6f8c3e73077b4b4a6ab1ea5047c37c57aee77657bc8ecd6f29b0af082d0b0c07"
++dependencies = [
++ "chrono",
++ "nom",
++ "once_cell",
++]
++
+ [[package]]
+ name = "displaydoc"
+ version = "0.2.5"
+@@ -169,7 +186,7 @@ checksum = "97369cbbc041bc366949bc74d34658d6cda5621039731c6310521892a3a20ae0"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -178,7 +195,7 @@ version = "0.8.35"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
+ dependencies = [
+- "cfg-if",
++ "cfg-if 1.0.0",
+ ]
+ 
+ [[package]]
+@@ -202,11 +219,13 @@ dependencies = [
+  "anyhow",
+  "chrono",
+  "eva-knowledge-base",
++ "notify",
+  "regex",
+  "reqwest",
+  "serde",
+  "serde_json",
+  "tokio",
++ "tokio-cron-scheduler",
+ ]
+ 
+ [[package]]
+@@ -221,6 +240,18 @@ version = "0.1.9"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "7360491ce676a36bf9bb3c56c1aa791658183a54d2744120f27285738d90465a"
+ 
++[[package]]
++name = "filetime"
++version = "0.2.25"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "35c0522e981e68cbfa8c3f978441a5f34b30b96e146b33cd3359176b50fe8586"
++dependencies = [
++ "cfg-if 1.0.0",
++ "libc",
++ "libredox",
++ "windows-sys 0.59.0",
++]
++
+ [[package]]
+ name = "fnv"
+ version = "1.0.7"
+@@ -236,6 +267,41 @@ dependencies = [
+  "percent-encoding",
+ ]
+ 
++[[package]]
++name = "fsevent"
++version = "0.4.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "5ab7d1bd1bd33cc98b0889831b72da23c0aa4df9cec7e0702f46ecea04b35db6"
++dependencies = [
++ "bitflags 1.3.2",
++ "fsevent-sys",
++]
++
++[[package]]
++name = "fsevent-sys"
++version = "2.0.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "f41b048a94555da0f42f1d632e2e19510084fb8e303b0daa2816e733fb3644a0"
++dependencies = [
++ "libc",
++]
++
++[[package]]
++name = "fuchsia-zircon"
++version = "0.3.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "2e9763c69ebaae630ba35f74888db465e49e259ba1bc0eda7d06f4a067615d82"
++dependencies = [
++ "bitflags 1.3.2",
++ "fuchsia-zircon-sys",
++]
++
++[[package]]
++name = "fuchsia-zircon-sys"
++version = "0.3.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "3dcaa9ae7725d12cdb85b3ad99a434db70b468c09ded17e012d86b5c1010f7a7"
++
+ [[package]]
+ name = "futures-channel"
+ version = "0.3.31"
+@@ -281,9 +347,21 @@ version = "0.2.16"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "335ff9f135e4384c8150d6f27c6daed433577f86b4750418338c01a1a2528592"
+ dependencies = [
+- "cfg-if",
++ "cfg-if 1.0.0",
++ "libc",
++ "wasi 0.11.0+wasi-snapshot-preview1",
++]
++
++[[package]]
++name = "getrandom"
++version = "0.3.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "73fea8450eea4bac3940448fb7ae50d91f034f941199fcd9d909a5a07aa455f0"
++dependencies = [
++ "cfg-if 1.0.0",
+  "libc",
+- "wasi",
++ "r-efi",
++ "wasi 0.14.2+wasi-0.2.4",
+ ]
+ 
+ [[package]]
+@@ -547,7 +625,7 @@ checksum = "1ec89e9337638ecdc08744df490b221a7399bf8d164eb52a665454e60e075ad6"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -581,6 +659,35 @@ dependencies = [
+  "hashbrown 0.15.3",
+ ]
+ 
++[[package]]
++name = "inotify"
++version = "0.7.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4816c66d2c8ae673df83366c18341538f234a26d65a9ecea5c348b453ac1d02f"
++dependencies = [
++ "bitflags 1.3.2",
++ "inotify-sys",
++ "libc",
++]
++
++[[package]]
++name = "inotify-sys"
++version = "0.1.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "e05c02b5e89bff3b946cedeca278abc628fe811e604f027c45a8aa3cf793d0eb"
++dependencies = [
++ "libc",
++]
++
++[[package]]
++name = "iovec"
++version = "0.1.4"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b2b3ea6ff95e175473f8ffe6a7eb7c00d054240321b84c57051175fe3c1e075e"
++dependencies = [
++ "libc",
++]
++
+ [[package]]
+ name = "ipnet"
+ version = "2.11.0"
+@@ -603,12 +710,39 @@ dependencies = [
+  "wasm-bindgen",
+ ]
+ 
++[[package]]
++name = "kernel32-sys"
++version = "0.2.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "7507624b29483431c0ba2d82aece8ca6cdba9382bff4ddd0f7490560c056098d"
++dependencies = [
++ "winapi 0.2.8",
++ "winapi-build",
++]
++
++[[package]]
++name = "lazycell"
++version = "1.3.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
++
+ [[package]]
+ name = "libc"
+ version = "0.2.172"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "d750af042f7ef4f724306de029d18836c26c1765a54a6a3f094cbd23a7267ffa"
+ 
++[[package]]
++name = "libredox"
++version = "0.1.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "c0ff37bd590ca25063e35af745c343cb7a0271906fb7b37e4813e8f79f00268d"
++dependencies = [
++ "bitflags 2.9.0",
++ "libc",
++ "redox_syscall",
++]
++
+ [[package]]
+ name = "libsqlite3-sys"
+ version = "0.27.0"
+@@ -644,6 +778,12 @@ version = "0.3.17"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+ 
++[[package]]
++name = "minimal-lexical"
++version = "0.2.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "68354c5c6bd36d73ff3feceb05efa59b6acb7626617f4962be322a825e61f79a"
++
+ [[package]]
+ name = "miniz_oxide"
+ version = "0.8.8"
+@@ -653,6 +793,25 @@ dependencies = [
+  "adler2",
+ ]
+ 
++[[package]]
++name = "mio"
++version = "0.6.23"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "4afd66f5b91bf2a3bc13fad0e21caedac168ca4c707504e75585648ae80e4cc4"
++dependencies = [
++ "cfg-if 0.1.10",
++ "fuchsia-zircon",
++ "fuchsia-zircon-sys",
++ "iovec",
++ "kernel32-sys",
++ "libc",
++ "log",
++ "miow",
++ "net2",
++ "slab",
++ "winapi 0.2.8",
++]
++
+ [[package]]
+ name = "mio"
+ version = "1.0.3"
+@@ -660,10 +819,84 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "2886843bf800fba2e3377cff24abf6379b4c4d5c6681eaf9ea5b0d15090450bd"
+ dependencies = [
+  "libc",
+- "wasi",
++ "wasi 0.11.0+wasi-snapshot-preview1",
+  "windows-sys 0.52.0",
+ ]
+ 
++[[package]]
++name = "mio-extras"
++version = "2.0.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "52403fe290012ce777c4626790c8951324a2b9e3316b3143779c72b029742f19"
++dependencies = [
++ "lazycell",
++ "log",
++ "mio 0.6.23",
++ "slab",
++]
++
++[[package]]
++name = "miow"
++version = "0.2.2"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ebd808424166322d4a38da87083bfddd3ac4c131334ed55856112eb06d46944d"
++dependencies = [
++ "kernel32-sys",
++ "net2",
++ "winapi 0.2.8",
++ "ws2_32-sys",
++]
++
++[[package]]
++name = "net2"
++version = "0.2.39"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b13b648036a2339d06de780866fbdfda0dde886de7b3af2ddeba8b14f4ee34ac"
++dependencies = [
++ "cfg-if 0.1.10",
++ "libc",
++ "winapi 0.3.9",
++]
++
++[[package]]
++name = "nom"
++version = "7.1.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d273983c5a657a70a3e8f2a01329822f3b8c8172b73826411a55751e404a0a4a"
++dependencies = [
++ "memchr",
++ "minimal-lexical",
++]
++
++[[package]]
++name = "notify"
++version = "4.0.18"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "b72dd35279a5dc895a30965e247b0961ba36c233dc48454a2de8ccd459f1afd3"
++dependencies = [
++ "bitflags 1.3.2",
++ "filetime",
++ "fsevent",
++ "fsevent-sys",
++ "inotify",
++ "libc",
++ "mio 0.6.23",
++ "mio-extras",
++ "walkdir",
++ "winapi 0.3.9",
++]
++
++[[package]]
++name = "num-derive"
++version = "0.3.3"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "876a53fff98e03a936a674b29568b0e605f06b29372c2489ff4de23f1949743d"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "syn 1.0.109",
++]
++
+ [[package]]
+ name = "num-traits"
+ version = "0.2.19"
+@@ -730,6 +963,21 @@ dependencies = [
+  "proc-macro2",
+ ]
+ 
++[[package]]
++name = "r-efi"
++version = "5.2.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "74765f6d916ee2faa39bc8e68e4f3ed8949b48cccdac59983d287a7cb71ce9c5"
++
++[[package]]
++name = "redox_syscall"
++version = "0.5.12"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "928fca9cf2aa042393a8325b9ead81d2f0df4cb12e1e24cef072922ccd99c5af"
++dependencies = [
++ "bitflags 2.9.0",
++]
++
+ [[package]]
+ name = "regex"
+ version = "1.11.1"
+@@ -807,8 +1055,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7"
+ dependencies = [
+  "cc",
+- "cfg-if",
+- "getrandom",
++ "cfg-if 1.0.0",
++ "getrandom 0.2.16",
+  "libc",
+  "untrusted",
+  "windows-sys 0.52.0",
+@@ -877,6 +1125,15 @@ version = "1.0.20"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
+ 
++[[package]]
++name = "same-file"
++version = "1.0.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502"
++dependencies = [
++ "winapi-util",
++]
++
+ [[package]]
+ name = "sct"
+ version = "0.7.1"
+@@ -904,7 +1161,7 @@ checksum = "5b0276cf7f2c73365f7157c8123c21cd9a50fbbd844757af28ca1f5925fc2a00"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -968,6 +1225,17 @@ version = "1.2.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
+ 
++[[package]]
++name = "syn"
++version = "1.0.109"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "72b64191b275b66ffe2469e8af2c1cfe3bafa67b529ead792a6d0160888b4237"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "unicode-ident",
++]
++
+ [[package]]
+ name = "syn"
+ version = "2.0.101"
+@@ -993,7 +1261,7 @@ checksum = "728a70f3dbaf5bab7f0c4b1ac8d7ae5ea60a4b5549c8a5914361c99147a709d2"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -1036,13 +1304,28 @@ dependencies = [
+  "backtrace",
+  "bytes",
+  "libc",
+- "mio",
++ "mio 1.0.3",
+  "pin-project-lite",
+  "socket2",
+  "tokio-macros",
+  "windows-sys 0.52.0",
+ ]
+ 
++[[package]]
++name = "tokio-cron-scheduler"
++version = "0.9.4"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "de2c1fd54a857b29c6cd1846f31903d0ae8e28175615c14a277aed45c58d8e27"
++dependencies = [
++ "chrono",
++ "cron",
++ "num-derive",
++ "num-traits",
++ "tokio",
++ "tracing",
++ "uuid",
++]
++
+ [[package]]
+ name = "tokio-macros"
+ version = "2.5.0"
+@@ -1051,7 +1334,7 @@ checksum = "6e06d43f1345a3bcd39f6a56dbb7dcab2ba47e68e8ac134855e7e2bdbaf8cab8"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -1090,9 +1373,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
+ dependencies = [
+  "pin-project-lite",
++ "tracing-attributes",
+  "tracing-core",
+ ]
+ 
++[[package]]
++name = "tracing-attributes"
++version = "0.1.28"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "395ae124c09f9e6918a2310af6038fba074bcf474ac352496d5910dd59a2226d"
++dependencies = [
++ "proc-macro2",
++ "quote",
++ "syn 2.0.101",
++]
++
+ [[package]]
+ name = "tracing-core"
+ version = "0.1.33"
+@@ -1143,6 +1438,15 @@ version = "1.0.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "b6c140620e7ffbb22c2dee59cafe6084a59b5ffc27a8859a5f0d494b5d52b6be"
+ 
++[[package]]
++name = "uuid"
++version = "1.16.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "458f7a779bf54acc9f347480ac654f68407d3aab21269a6e3c9f922acd9e2da9"
++dependencies = [
++ "getrandom 0.3.2",
++]
++
+ [[package]]
+ name = "vcpkg"
+ version = "0.2.15"
+@@ -1155,6 +1459,16 @@ version = "0.9.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+ 
++[[package]]
++name = "walkdir"
++version = "2.5.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "29790946404f91d9c5d06f9874efddea1dc06c5efe94541a7d6863108e3a5e4b"
++dependencies = [
++ "same-file",
++ "winapi-util",
++]
++
+ [[package]]
+ name = "want"
+ version = "0.3.1"
+@@ -1170,13 +1484,22 @@ version = "0.11.0+wasi-snapshot-preview1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
+ 
++[[package]]
++name = "wasi"
++version = "0.14.2+wasi-0.2.4"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "9683f9a5a998d873c0d21fcbe3c083009670149a8fab228644b8bd36b2c48cb3"
++dependencies = [
++ "wit-bindgen-rt",
++]
++
+ [[package]]
+ name = "wasm-bindgen"
+ version = "0.2.100"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "1edc8929d7499fc4e8f0be2262a241556cfc54a0bea223790e71446f2aab1ef5"
+ dependencies = [
+- "cfg-if",
++ "cfg-if 1.0.0",
+  "once_cell",
+  "rustversion",
+  "wasm-bindgen-macro",
+@@ -1192,7 +1515,7 @@ dependencies = [
+  "log",
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+  "wasm-bindgen-shared",
+ ]
+ 
+@@ -1202,7 +1525,7 @@ version = "0.4.50"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "555d470ec0bc3bb57890405e5d4322cc9ea83cebb085523ced7be4144dac1e61"
+ dependencies = [
+- "cfg-if",
++ "cfg-if 1.0.0",
+  "js-sys",
+  "once_cell",
+  "wasm-bindgen",
+@@ -1227,7 +1550,7 @@ checksum = "8ae87ea40c9f689fc23f209965b6fb8a99ad69aeeb0231408be24920604395de"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+  "wasm-bindgen-backend",
+  "wasm-bindgen-shared",
+ ]
+@@ -1257,6 +1580,49 @@ version = "0.25.4"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "5f20c57d8d7db6d3b86154206ae5d8fba62dd39573114de97c2cb0578251f8e1"
+ 
++[[package]]
++name = "winapi"
++version = "0.2.8"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "167dc9d6949a9b857f3451275e911c3f44255842c1f7a76f33c55103a909087a"
++
++[[package]]
++name = "winapi"
++version = "0.3.9"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "5c839a674fcd7a98952e593242ea400abe93992746761e38641405d28b00f419"
++dependencies = [
++ "winapi-i686-pc-windows-gnu",
++ "winapi-x86_64-pc-windows-gnu",
++]
++
++[[package]]
++name = "winapi-build"
++version = "0.1.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "2d315eee3b34aca4797b2da6b13ed88266e6d612562a0c46390af8299fc699bc"
++
++[[package]]
++name = "winapi-i686-pc-windows-gnu"
++version = "0.4.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
++
++[[package]]
++name = "winapi-util"
++version = "0.1.9"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
++dependencies = [
++ "windows-sys 0.59.0",
++]
++
++[[package]]
++name = "winapi-x86_64-pc-windows-gnu"
++version = "0.4.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
++
+ [[package]]
+ name = "windows-core"
+ version = "0.61.0"
+@@ -1278,7 +1644,7 @@ checksum = "a47fddd13af08290e67f4acabf4b459f647552718f683a7b415d290ac744a836"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -1289,7 +1655,7 @@ checksum = "bd9211b69f8dcdfa817bfd14bf1c97c9188afa36f4750130fcdf3f400eca9fa8"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -1334,6 +1700,15 @@ dependencies = [
+  "windows-targets 0.52.6",
+ ]
+ 
++[[package]]
++name = "windows-sys"
++version = "0.59.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1e38bc4d79ed67fd075bcc251a1c39b32a1776bbe92e5bef1f0bf1f8c531853b"
++dependencies = [
++ "windows-targets 0.52.6",
++]
++
+ [[package]]
+ name = "windows-targets"
+ version = "0.48.5"
+@@ -1461,10 +1836,19 @@ version = "0.50.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "524e57b2c537c0f9b1e69f1965311ec12182b4122e45035b1508cd24d2adadb1"
+ dependencies = [
+- "cfg-if",
++ "cfg-if 1.0.0",
+  "windows-sys 0.48.0",
+ ]
+ 
++[[package]]
++name = "wit-bindgen-rt"
++version = "0.39.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "6f42320e61fe2cfd34354ecb597f86f413484a798ba44a8ca1165c58d42da6c1"
++dependencies = [
++ "bitflags 2.9.0",
++]
++
+ [[package]]
+ name = "write16"
+ version = "1.0.0"
+@@ -1477,6 +1861,16 @@ version = "0.5.5"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "1e9df38ee2d2c3c5948ea468a8406ff0db0b29ae1ffde1bcf20ef305bcc95c51"
+ 
++[[package]]
++name = "ws2_32-sys"
++version = "0.2.1"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "d59cefebd0c892fa2dd6de581e937301d8552cb44489cdff035c6187cb63fa5e"
++dependencies = [
++ "winapi 0.2.8",
++ "winapi-build",
++]
++
+ [[package]]
+ name = "yoke"
+ version = "0.7.5"
+@@ -1497,7 +1891,7 @@ checksum = "2380878cad4ac9aac1e2435f3eb4020e8374b5f13c296cb75b4620ff8e229154"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+  "synstructure",
+ ]
+ 
+@@ -1518,7 +1912,7 @@ checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+ 
+ [[package]]
+@@ -1538,7 +1932,7 @@ checksum = "d71e5d6e06ab090c67b5e44993ec16b72dcbaabc526db883a360057678b48502"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+  "synstructure",
+ ]
+ 
+@@ -1561,5 +1955,5 @@ checksum = "6eafa6dfb17584ea3e2bd6e76e0cc15ad7af12b09abdd1ca55961bed9b1063c6"
+ dependencies = [
+  "proc-macro2",
+  "quote",
+- "syn",
++ "syn 2.0.101",
+ ]
+diff --git a/crates/eva-tools/Cargo.toml b/crates/eva-tools/Cargo.toml
+index ad20b92..8ad11af 100644
+--- a/crates/eva-tools/Cargo.toml
++++ b/crates/eva-tools/Cargo.toml
+@@ -4,6 +4,9 @@ version = "0.3.0"
+ edition = "2024"
+ 
+ [dependencies]
++notify = "4.0"
++tokio-cron-scheduler = "0.9"
++
+ eva-knowledge-base = { path = "../eva-knowledge-base" }
+ regex = "1.11.1"
+ tokio = { version = "1.37", features = ["rt-multi-thread", "macros"] }
+diff --git a/crates/eva-tools/src/auto_loop_executor.rs b/crates/eva-tools/src/auto_loop_executor.rs
+index f6fd24c..aba3a67 100644
+--- a/crates/eva-tools/src/auto_loop_executor.rs
++++ b/crates/eva-tools/src/auto_loop_executor.rs
+@@ -1,8 +1,50 @@
+ use std::process::Command;
+ use crate::error_recovery;
++use notify::{Watcher, RecursiveMode, watcher, DebouncedEvent};
++use std::sync::mpsc::channel;
++use std::time::Duration;
++use tokio_cron_scheduler::{JobScheduler, Job};
++use std::thread;
+ 
+-/// 自動迴圈執行器主流程
+-/// 會自動執行 cargo test，遇錯誤自動修復，最多重試 MAX 次，失敗則標記需人工複查。
++/// Daemon + watcher + cron executor (async)
++pub async fn run_auto_loop_daemon() {
++    // 啟動 watcher 任務
++    let (tx, rx) = channel();
++    let mut watcher = watcher(tx, Duration::from_secs(2)).expect("建立 watcher 失敗");
++    watcher.watch("src", RecursiveMode::Recursive).expect("監聽 src/ 失敗");
++    watcher.watch("tests", RecursiveMode::Recursive).expect("監聽 tests/ 失敗");
++    println!("[daemon] 監聽 src/ 與 tests/ 目錄異動...");
++
++    // 啟動 cron 任務（每日凌晨 3:15 執行 fine-tune stub）
++    let sched = JobScheduler::new().await.expect("建立 scheduler 失敗");
++
++    let job = Job::new_async("15 3 * * *", |_uuid, _l| {
++        Box::pin(async move {
++            println!("[cron] 定時觸發 fine-tune stub (每日 03:15)");
++            // TODO: 呼叫 fine-tune 實作
++        })
++    }).expect("建立 cron job 失敗");
++
++    sched.add(job).await.expect("新增 cron 任務失敗");
++    sched.start().await.expect("啟動 scheduler 失敗");
++
++    // watcher 事件處理（blocking）
++    loop {
++        match rx.recv() {
++            Ok(DebouncedEvent::Write(path)) | Ok(DebouncedEvent::Create(path)) | Ok(DebouncedEvent::Remove(path)) => {
++                println!("[watcher] 偵測到 {:?} 異動，觸發自動修補流程...", path);
++                // 同步呼叫原 auto-loop 修補流程
++                let _ = run_auto_loop_executor();
++            },
++            Ok(_) => {},
++            Err(e) => println!("[watcher] 監聽錯誤: {:?}", e),
++        }
++    }
++}
++
++
++
++/// 原同步修補流程（保留重試與標記分支）
+ pub fn run_auto_loop_executor() -> std::io::Result<()> {
+     let mut retries = 0;
+     const MAX: usize = 5;
+@@ -26,7 +68,6 @@ pub fn run_auto_loop_executor() -> std::io::Result<()> {
+ 
+ /// 標記需人工複查（建立 Git branch）
+ fn tag_for_review() {
+-    use std::process::Command;
+     use chrono::Local;
+     let branch = format!("eva-auto-review-{}", Local::now().format("%Y%m%d%H%M%S"));
+     let _ = Command::new("git").args(["checkout", "-b", &branch]).output();
+diff --git a/crates/eva-tools/src/main.rs b/crates/eva-tools/src/main.rs
+index 8fb116b..c8f6a1d 100644
+--- a/crates/eva-tools/src/main.rs
++++ b/crates/eva-tools/src/main.rs
+@@ -1,7 +1,6 @@
+ use std::path::Path;
+ use std::env;
+-#[cfg(not(test))]
+-use fake_crate::foo; // 故意製造漏 use 錯誤
++
+ mod sum;
+ mod apply_patch;
+ use sum::sum;
+@@ -49,8 +48,58 @@ fn main() {
+         return;
+     }
+     let cmd = &args[1];
+-    if cmd == "create-fix-pr" {
+-        println!("(stub) create-fix-pr: 這裡會自動產生 patch 並建立 PR");
++    if cmd == "create-fix-pr" || (cmd == "create-fix-pr" && args.get(2).map(|s| s == "--ci").unwrap_or(false)) {
++        use std::process::{Command, Stdio};
++        use chrono::Local;
++        use std::fs;
++        // 0. 檢查 git config
++        let check_name = Command::new("git").args(["config", "user.name"]).output().unwrap();
++        if !check_name.status.success() || String::from_utf8_lossy(&check_name.stdout).trim().is_empty() {
++            println!("[create-fix-pr] 未設置 git user.name，嘗試自動設置...");
++            let _ = Command::new("git").args(["config", "user.name", "eva-bot"]).status();
++        }
++        let check_email = Command::new("git").args(["config", "user.email"]).output().unwrap();
++        if !check_email.status.success() || String::from_utf8_lossy(&check_email.stdout).trim().is_empty() {
++            println!("[create-fix-pr] 未設置 git user.email，嘗試自動設置...");
++            let _ = Command::new("git").args(["config", "user.email", "eva-bot@localhost"]).status();
++        }
++        // 1. 產生 patch
++        println!("[create-fix-pr] 產生 patch 檔...");
++        let patch_status = Command::new("git")
++            .args(["diff"]).stdout(Stdio::piped()).output().expect("無法執行 git diff");
++        fs::write("eva_auto_fix.patch", &patch_status.stdout).expect("寫入 patch 失敗");
++        // 2. 建立分支並 commit
++        let branch = format!("auto-review-{}", Local::now().format("%Y%m%d%H%M%S"));
++        println!("[create-fix-pr] 建立分支 {} 並 commit 修補內容...", branch);
++        let _ = Command::new("git").args(["checkout", "-b", &branch]).status();
++        let _ = Command::new("git").args(["add", "."]).status();
++        // 檢查是否有 staged 內容
++        let diff_index = Command::new("git").args(["diff", "--cached", "--name-only"]).output().unwrap();
++        if String::from_utf8_lossy(&diff_index.stdout).trim().is_empty() {
++            eprintln!("[create-fix-pr] 無任何修補內容可 commit，流程中止。");
++            return;
++        }
++        let _ = Command::new("git").args(["commit", "-m", "auto-fix: 自動修補 PR by bot"]).status();
++        // 3. push 至 origin
++        println!("[create-fix-pr] push 至 origin/{} ...", branch);
++        let _ = Command::new("git").args(["push", "origin", &branch]).status();
++        // 4. 檢查 gh CLI
++        let gh_check = Command::new("gh").arg("--version").output();
++        if gh_check.is_err() || !gh_check.as_ref().unwrap().status.success() {
++            eprintln!("[create-fix-pr] gh CLI 未安裝或未在 PATH，請安裝 GitHub CLI (gh) 後再試。流程中止。");
++            return;
++        }
++        // 5. 用 gh CLI 建 PR
++        println!("[create-fix-pr] 建立 PR ...");
++        let pr_body = "本 PR 由 bot 自動產生，包含自動修補 patch 及 KB 引用。\n\n- Patch: eva_auto_fix.patch\n- KB: [knowledge_base/error_log.md](./crates/eva-tools/knowledge_base/error_log.md)";
++        let gh_status = Command::new("gh")
++            .args(["pr", "create", "--base", "main", "--head", &branch, "--title", "[auto-fix] 自動修補 PR (by bot)", "--body", pr_body])
++            .status();
++        match gh_status {
++            Ok(status) if status.success() => println!("[create-fix-pr] PR 建立成功。"),
++            Ok(status) => eprintln!("[create-fix-pr] PR 建立失敗，狀態碼: {}", status),
++            Err(e) => eprintln!("[create-fix-pr] PR 建立失敗: {} (請確認 gh CLI 與權限)", e),
++        }
+         return;
+     }
+     match cmd.as_str() {

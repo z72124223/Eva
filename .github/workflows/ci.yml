@@ -1,0 +1,42 @@
+name: EVA CI
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Install cargo-nextest
+        run: cargo install cargo-nextest --locked
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
+      - name: Install trivy
+        run: |
+          sudo apt-get update && sudo apt-get install -y wget
+          wget -qO- https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.2_Linux-64bit.tar.gz | tar xz
+          sudo mv trivy /usr/local/bin/
+      - name: Check structure
+        run: cargo run -p eva-tools -- check-structure
+      - name: Run tests (nextest)
+        run: cargo nextest run
+      - name: Check unused deps
+        run: cargo udeps --all-targets --all-features
+      - name: Run trivy filesystem scan
+        run: trivy fs .
+
+      - name: Auto-fix and create PR if test fails
+        if: failure()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cargo run -p eva-tools -- create-fix-pr --ci

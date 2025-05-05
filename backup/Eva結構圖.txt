@@ -1,0 +1,39 @@
+/src
+├── main.rs                      # 🚪 主程式入口：僅初始化模組與啟動主流程
+│
+├── interface/                   # 📖 系統共通 trait 定義區（標準化）
+│   └── self_describing.rs       # 🔖 SelfDescribing trait：每個模組都要實作（統一識別用）
+│
+├── manager/                     # 🛠️ 控制與整合層：負責主流程與模組管理
+│   ├── mod.rs                   # 📦 manager 目錄的進入點（匯入下列模組）
+│   ├── plugin_manager.rs        # 🔌 插件載入、卸載、熱重載模組
+│   ├── command_router.rs        # 🧭 使用者指令解析與功能派發模組
+│   ├── llm_manager.rs           # 🤖 控管 GPT / local LLM 的切換與橋接
+│   └── task_dispatcher.rs       # 🧵 任務分配與執行引擎（可選，若有多任務）
+│
+├── plugin/                      # 🧩 可擴充功能插件模組群（每個 plugin 獨立）
+│   ├── mod.rs                   # 📦 匯入所有 plugin
+│   ├── tts_plugin.rs            # 🔊 語音合成插件（Text-to-Speech）
+│   ├── novel_core.rs            # 📖 互動小說主邏輯插件
+│   ├── game_assistant.rs        # 🎮 遊戲輔助功能（可分析遊戲狀況、回答問題）
+│   └── xxx_plugin.rs            # ➕ 你未來要擴充的自動生成插件模組
+│
+├── comms/                       # 🌐 外部模型與 API 通訊模組（雙軌 LLM）
+│   ├── mod.rs                   # 📦 匯入所有通訊模組
+│   ├── api_client.rs            # 🌐 GPT API 串接與封裝邏輯
+│   ├── local_runner.rs          # 💻 本地模型執行器（基於 llama.cpp 等）
+│   ├── chat_adapter.rs          # 💬 Chat Completions API 封裝
+│   └── model_router.rs          # 🔀 自動判斷要走 GPT 或 Local LLM 的邏輯分派器
+│
+├── state/                       # 🧠 資料儲存與角色世界狀態管理（存檔/讀檔）
+│   ├── mod.rs                   # 📦 匯入所有 state 模組
+│   ├── db.rs                    # 🗄️ 資料庫存取層（SQLite、JSON、檔案系統）
+│   ├── save_load.rs             # 💾 儲存與載入功能（角色記憶、劇情進度）
+│   └── world.rs                 # 🌍 世界狀態、角色屬性、地圖、時間軸等結構
+│
+├── story_support/               # 🎞️ 敘事與沉浸輔助模組群（高階 AI 故事維穩）
+│   ├── mod.rs                   # 📦 匯入所有敘事輔助模組
+│   ├── memory_injection.rs      # 🧠 注入角色記憶至 prompt 或 LLM 上下文
+│   ├── motivation_tracker.rs    # 💡 追蹤角色目標、慾望、任務動機等持續性
+│   ├── semantic_summary.rs      # 📚 長期劇情語義壓縮模組（針對 context 過載）
+│   └── perspective_filter.rs    # 👁️ 限制角色主觀視角，維持敘事一致性與沉浸感
