@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "crates/eva-knowledge-base",
+    "crates/eva-tools"
+]
+resolver = "3"

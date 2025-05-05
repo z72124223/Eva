@@ -1,0 +1,131 @@
+檔名：src/main.rs  
+功能：啟動入口、系統初始化、模組註冊與總調度
+原則：乾淨、統一、僅做初始化、不寫邏輯
+
+🧱 main.rs 內容構成（七大區塊）
+
+✅ 1. 外部標準庫與 crate 引用區
+
+use std::env;
+
+✅ 用於讀取環境變數（如 dotenvy::dotenv() 所需）
+
+✅ 本區僅允許標準庫與明確用途的外部依賴引用
+
+✅ 2. 自家模組匯入區
+
+mod interface;
+mod manager;
+mod plugin;
+mod comms;
+mod state;
+mod story_support;
+
+
+✅ 對整個 /src 下的模組做明確掛載
+
+✅ 所有實作模組皆集中於該資料夾，維持主程式無邏輯污染
+
+
+
+✅ 3. Trait 導入（標準化接口）
+use interface::self_describing::SelfDescribing;
+
+✅ 主程式會呼叫 SelfDescribing trait 的模組，產生模組功能概覽
+
+✅ 所有被 main.rs 呼叫的模組都需實作此 trait
+
+✅ 4. 模組實體導入區（統一用於初始化）
+
+use manager::plugin_manager::PluginManager;
+use manager::llm_manager::LLMManager;
+use manager::command_router::CommandRouter;
+use comms::api_client::ApiClient;
+use comms::local_runner::LocalRunner;
+use state::memory_syncer::MemorySyncer;
+
+
+✅ 每個模組都被明確調用其 ::new() 或 ::load() 方法
+
+✅ 僅呼叫初始化方法，不干涉模組內部邏輯或資料
+
+✅ 5. 啟動橫幅函數（print_banner）
+
+fn print_banner() {
+    println!("==================================");
+    println!("🔧 EVA AI SYSTEM STARTING UP...");
+    println!("==================================");
+
+✅ 僅作為視覺啟動提示（可用於除錯與使用者認知）
+
+
+
+✅ 6. 模組總覽函數（print_module_capabilities）
+
+fn print_module_capabilities(modules: &[&dyn SelfDescribing]) {
+    println!("\n🧠 Loaded Modules:");
+    for m in modules {
+        println!("- {}: {:?}", m.name(), m.capabilities());
+    }
+}
+
+
+
+
+✅ 透過 trait 統一掃描所有模組的 name() 與 capabilities()
+
+✅ 提供 GPT 與開發者查看目前系統功能能力分布
+
+
+
+✅ 7. 主函式 main()
+
+fn main() {
+    print_banner();                         // 步驟 1：顯示橫幅
+    let _ = dotenvy::dotenv();              // 步驟 2：載入 .env（若有）
+    
+    // 步驟 3：初始化模組（僅做 ::new）
+    let plugin_manager = PluginManager::new();
+    let llm_manager = LLMManager::new();
+    let command_router = CommandRouter::new();
+    let api_client = ApiClient::new();
+    let local_runner = LocalRunner::new();
+    let memory_syncer = MemorySyncer::load();
+
+    // 步驟 4：印出模組功能圖
+    print_module_capabilities(&[
+        &plugin_manager,
+        &llm_manager,
+        &command_router,
+        &api_client,
+        &local_runner,
+        &memory_syncer,
+    ]);
+
+    // 步驟 5：啟動系統主流程
+    println!("🚀 啟動 EVA 核心引擎...");
+    // EVAEngine::start();  // <--- 目前留白，待引擎模組實作
+}
+
+
+
+
+
+🚫 main.rs 不應包含的內容（明確禁止）
+
+
+
+| 類型                | 說明                                      |
+| ----------------- | --------------------------------------- |
+| ❌ 資料處理邏輯          | 不允許進行任何 match、if/else、loop 等運算流程        |
+| ❌ 執行任務或 plugin 功能 | 僅呼叫 `.new()`，不執行 `run_xxx()`、`do_yyy()` |
+| ❌ 呼叫模組內部資料結構      | 不應接觸 struct 欄位或內部方法                     |
+| ❌ 撰寫錯誤處理流程        | 所有錯誤應在模組內處理完畢，主程式不處理 `Result<T, E>`     |
+
+
+
+🎯 main.rs 的定位總結（完整表述）
+main.rs 是 EVA 系統的唯一啟動入口，其唯一目的是：「初始化並總調度整個系統」，
+它必須乾淨、可讀、統一、零邏輯污染、零功能實作、無業務依賴。
+所有實作皆應封裝於模組中，主程式僅負責串接與觸發模組初始化流程。
+

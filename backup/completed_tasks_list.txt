@@ -1,0 +1,9 @@
+# Completed Tasks List
+
+## 2025-05-03
+- Implemented interactive novel mode with API integration for story generation.
+- Resolved dependency issues and ensured successful compilation and execution of the EVA project.
+- Added a prompt for user input in the interactive novel mode to ensure the input dialog is visible to the user.
+
+## Future Updates
+- Continue to update this list with new completed tasks to maintain a clear record of progress.
