@@ -204,3 +204,5 @@ schema/
 - `eva_bus_messages_total{type="intent"}`
 - `eva_bus_validation_errors_total`
 - `eva_bus_schema_version`
+
+<!-- Minor whitespace fix -->
