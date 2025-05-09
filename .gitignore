@@ -1,0 +1,31 @@
+# Rust
+/target/
+**/*.rs.bk
+
+# Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Mac/Windows
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+
+# Databases
+*.db
+*.sqlite
+
+# Other
+*.zip
+*.tar
+*.gz
+*.7z
