@@ -1,1 +1,0 @@
-FilterMap<FilterEntry<walkdir::IntoIter, {closure@src\scanner.rs:84:27: 84:30}>, fn(std::result::Result<walkdir::DirEntry, Box<dyn StdError>>) -> std::option::Option<walkdir::DirEntry> {std::result::Result::<walkdir::DirEntry, Box<dyn StdError>>::ok}>
