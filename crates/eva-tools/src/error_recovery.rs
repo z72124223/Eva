@@ -6,8 +6,12 @@ use std::io::Write;
 /// timestamp | module | error_snippet | action | status
 use regex::Regex;
 use std::fs;
+use crate::safety_config::SafetyConfig;
 
 pub fn handle(stdout: &[u8], _stderr: &[u8]) -> std::io::Result<()> {
+    // 動態載入安全參數
+    let config = SafetyConfig::from_yaml("../../safety.yaml");
+    // 之後可用 config.max_patch_size, config.danger_list 進行安全檢查
     let msg = String::from_utf8_lossy(stdout);
     println!("[debug] error_recovery 收到 stdout:\n{}", msg);
     println!("[error_recovery::handle] 收到錯誤訊息: {}", msg);

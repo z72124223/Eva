@@ -1,6 +1,37 @@
+[package]
+name = "eva"
+version = "0.1.0"
+edition = "2021"
+default-run = "eva"
+
 [workspace]
 members = [
-    "crates/eva-knowledge-base",
-    "crates/eva-tools"
-]
-resolver = "3"
+    "crates/eva-tools",
+    "crates/eva-core",
+    "xtask"
+, "crates/eva-ops"]
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+anyhow = "1.0"
+eva-ops = { path = "crates/eva-ops" }
+tracing-subscriber = "0.3"
+
+eva-system-core = { path = "crates/eva-system-core" }
+eva-core = { path = "crates/eva-core" }
+# 專案其他模組用到的共用 crate
+chrono = { version = "0.4.24", features = ["serde", "clock"] }
+rusqlite = { version = "0.30.0" }
+walkdir = "2.3.3"
+serde = { version = "1.0.163", features = ["derive"] }
+serde_json = "1.0.96"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+# removed llama_cpp_rs dependency temporarily
+
+# Removed workspace section to avoid package/workspace conflict
+
+[dev-dependencies]
+tokio-tungstenite = "0.23"
+url = "2"
+futures-util = "0.3"
+eva-core = { path = "crates/eva-core" }

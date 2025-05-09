@@ -12,8 +12,19 @@ mod auto_loop_executor;
 mod api_server;
 pub mod error_recovery;
 mod prompt_adapter;
+mod safety_config;
+mod fine_tune; // 新增此行
+mod tui_dashboard; // 新增 TUI Dashboard
 
 use auto_generate::run_auto_generate;
+use std::fs;
+use std::path::PathBuf;
+use sha2::{Sha256, Digest};
+use serde_json;
+
+// 加入 task_planner
+use task_planner::plan as task_plan;
+
 
 /// 主程式進入點
 fn main() {
@@ -25,6 +36,7 @@ fn main() {
             println!("[1] 檢查結構");
             println!("[2] 產生骨架");
             println!("[3] 啟動 HTTP API 伺服器");
+            println!("[4] Patch Dashboard (TUI/CLI)");
             println!("[q] 離開");
             print!("請輸入選項: ");
             use std::io::{self, Write};
@@ -40,6 +52,9 @@ fn main() {
                     let rt = tokio::runtime::Runtime::new().unwrap();
                     rt.block_on(eva_api_server());
                     break;
+                },
+                "4" => {
+                    let _ = tui_dashboard::dashboard_cli();
                 },
                 "q" | "Q" => { println!("再見！"); break; },
                 _ => println!("無效選項，請重新輸入。"),
@@ -100,6 +115,20 @@ fn main() {
             Ok(status) => eprintln!("[create-fix-pr] PR 建立失敗，狀態碼: {}", status),
             Err(e) => eprintln!("[create-fix-pr] PR 建立失敗: {} (請確認 gh CLI 與權限)", e),
         }
+        return;
+    }
+    if cmd == "plan" && args.len() > 2 {
+        let goal = &args[2];
+        let tasks = task_plan(goal);
+        // 產生 goal hash 當檔名
+        let mut hasher = Sha256::new();
+        hasher.update(goal.as_bytes());
+        let hash = format!("{:x}", hasher.finalize());
+        let tasks_dir = PathBuf::from("tasks");
+        if !tasks_dir.exists() { fs::create_dir_all(&tasks_dir).unwrap(); }
+        let out_path = tasks_dir.join(format!("{}.json", hash));
+        fs::write(&out_path, serde_json::to_string_pretty(&tasks).unwrap()).expect("寫入 tasks json 失敗");
+        println!("[plan] 已產生 {} 任務於 {}", tasks.len(), out_path.display());
         return;
     }
     match cmd.as_str() {

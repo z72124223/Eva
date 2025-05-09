@@ -1,0 +1,2 @@
+MappedRows<'_, {closure@src\query.rs:85:49: 85:54}>
+MappedRows<'_, {closure@src\query.rs:96:36: 96:41}>

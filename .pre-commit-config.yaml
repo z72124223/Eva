@@ -1,0 +1,17 @@
+repos:
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: v0.6.0
+    hooks:
+      - id: cargo-fmt
+      - id: cargo-clippy
+        args: ["--", "-D", "warnings"]
+      - id: cargo-test
+      - id: cargo-udeps
+
+  - repo: local
+    hooks:
+      - id: cargo-check-structure
+        name: "EVA structure check"
+        entry: "cargo run -p eva-tools -- check-structure"
+        language: system
+        pass_filenames: false

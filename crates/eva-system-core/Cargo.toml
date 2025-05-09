@@ -1,0 +1,15 @@
+[package]
+name = "eva-system-core"
+version = "0.1.0"
+edition = "2021"
+description = "EVA 系統核心模組 - 自省系統和模組監控"
+
+[dependencies]
+rusqlite = { version = "0.30.0", features = ["bundled"] }
+walkdir = "2.3.3"
+chrono = "0.4.24"
+serde = { version = "1.0.163", features = ["derive"] }
+serde_json = "1.0.96"
+
+[dev-dependencies]
+tempfile = "3.8.0"

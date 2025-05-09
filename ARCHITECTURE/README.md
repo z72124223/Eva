@@ -2,7 +2,7 @@
 
 本目錄彙整 EVA 藍圖所有設計文件，並提供快速導覽：
 
-- [總覽與目錄結構](./ARCHITECTURE_TREE.md)
+- [總覽與目錄結構](./ARCHITECTURE_TREE_CANONICAL.md)
 - [D6-2 安全機制設計與沙盒驗證](./D6-2.md)
 - [D6-1 自我增生串流驗證](./D6-1.md)
 - [自動插入 use 功能設計](./AUTO_USE.md)

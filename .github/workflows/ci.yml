@@ -17,6 +17,11 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+      - name: Require RFC
+        run: |
+          if git diff --name-only ${{ github.sha }} | grep -q '^src/'; then
+            git diff --name-only ${{ github.sha }} | grep -q '^docs/rfc/' || (echo "Error: Code changes require an RFC in docs/rfc/" && exit 1)
+          fi
       - name: Install cargo-nextest
         run: cargo install cargo-nextest --locked
       - name: Install cargo-udeps
@@ -30,8 +35,23 @@ jobs:
         run: cargo run -p eva-tools -- check-structure
       - name: Run tests (nextest)
         run: cargo nextest run
+      - name: Coverage (eva-tools ≥95%)
+        run: |
+          cargo install cargo-tarpaulin --locked
+          cargo tarpaulin --engine llvm -p eva-tools --fail-under 95
+      - name: Coverage (other crates ≥80%)
+        run: |
+          cargo tarpaulin --engine llvm --workspace --exclude eva-tools --fail-under 80
+      - name: Mutation testing (cargo-mutants)
+        run: |
+          cargo install cargo-mutants --locked
+          cargo mutants --no-shuffle --workspace --deny-detected
       - name: Check unused deps
         run: cargo udeps --all-targets --all-features
+      - name: Dead link check (lychee)
+        run: |
+          cargo install lychee --locked
+          lychee -v --no-progress README.md ARCHITECTURE/**/*.md
       - name: Run trivy filesystem scan
         run: trivy fs .
 

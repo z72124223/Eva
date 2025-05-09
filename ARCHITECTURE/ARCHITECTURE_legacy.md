@@ -407,7 +407,7 @@ EVA 具備以下 Plug-&-Play 自增生架構，並持續進化為「無人值守
 
 ## 2.1 Canonical Workspace Tree # illustrative
 
-```tree # canonical # illustrative
+```tree # legacy # illustrative
 src
 ├─ app
 │   ├─ cli.rs
@@ -439,7 +439,7 @@ src
 
 ### 2.2 Crates 目錄 # illustrative
 
-```tree # canonical # illustrative
+```tree # legacy # illustrative
 crates
 ├─ eva‑tools
 │   └─ src/...
@@ -453,7 +453,7 @@ crates
 
 > 其餘片段式目錄展示請加 # illustrative 註解，例如：
 >
-> ```tree # illustrative
+> ```tree # legacy
 > crates/
 >  └─ infrastructure/
 > ```
@@ -547,7 +547,7 @@ EVA 具備以下 Plug-&-Play 自增生架構，並持續進化為「無人值守
 
 
 ## 2.3 工具相容性說明
-- 只解析第一個 # canonical tree 區塊。
+- 只解析第一個 # legacy tree 區塊。
 - 若找不到 canonical，回退至 legacy 掃描。
 - 行尾有 # illustrative 或 # legacy 標記者，eva-tools 皆忽略之。
 - canonical tree 必須同步最新模組與 crate，缺漏會報錯。
@@ -4507,7 +4507,7 @@ EVA 具備以下 Plug-&-Play 自增生架構，並持續進化為「無人值守
 
 ## 2.1 Canonical Workspace Tree # illustrative
 
-```tree # canonical # illustrative
+```tree # legacy # illustrative
 src
 ├─ app
 │   ├─ cli.rs
@@ -4539,7 +4539,7 @@ src
 
 ### 2.2 Crates 目錄 # illustrative
 
-```tree # canonical # illustrative
+```tree # legacy # illustrative
 crates
 ├─ eva‑tools
 │   └─ src/...
@@ -4553,7 +4553,7 @@ crates
 
 > 其餘片段式目錄展示請加 # illustrative 註解，例如：
 >
-> ```tree # illustrative
+> ```tree # legacy
 > crates/
 >  └─ infrastructure/
 > ```
@@ -4647,7 +4647,7 @@ EVA 具備以下 Plug-&-Play 自增生架構，並持續進化為「無人值守
 
 
 ## 2.3 工具相容性說明
-- 只解析第一個 # canonical tree 區塊。
+- 只解析第一個 # legacy tree 區塊。
 - 若找不到 canonical，回退至 legacy 掃描。
 - 行尾有 # illustrative 或 # legacy 標記者，eva-tools 皆忽略之。
 - canonical tree 必須同步最新模組與 crate，缺漏會報錯。

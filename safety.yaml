@@ -1,0 +1,5 @@
+MAX_PATCH_SIZE: 2048
+danger_list:
+  - unsafe
+  - std::fs::remove_
+  - std::process::Command

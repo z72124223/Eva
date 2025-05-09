@@ -1,0 +1,22 @@
+name: Daily Status Sync
+
+on:
+  schedule:
+    - cron: '10 0 * * *'   # 每日 00:10 UTC（= 08:10 Taipei）
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain & xtask deps
+        run: |
+          rustup toolchain install stable
+          cargo install cargo-mutants mdbook-linkcheck --locked
+      - name: Regenerate status table
+        run: cargo xtask gen-status-table
+      - name: Commit & PR if changed
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'CRITICAL_ISSUES_STATUS.md'
+          message: 'chore(status): auto-update critical-issues status'

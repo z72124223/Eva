@@ -1,0 +1,32 @@
+name: Auto Fix after CI failure
+
+on:
+  workflow_run:
+    workflows: ["CI"]          # 你的 CI 檔名，若叫 ci.yml 就填 "CI"
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout failing commit
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Run eva-tools create-fix-pr
+        run: cargo run --package eva-tools -- create-fix-pr --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

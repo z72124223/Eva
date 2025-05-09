@@ -5,6 +5,7 @@ use std::sync::mpsc::channel;
 use std::time::Duration;
 use tokio_cron_scheduler::{JobScheduler, Job};
 use std::thread;
+use eva_tools::fine_tune;
 
 /// Daemon + watcher + cron executor (async)
 pub async fn run_auto_loop_daemon() {
@@ -21,7 +22,10 @@ pub async fn run_auto_loop_daemon() {
     let job = Job::new_async("15 3 * * *", |_uuid, _l| {
         Box::pin(async move {
             println!("[cron] 定時觸發 fine-tune stub (每日 03:15)");
-            // TODO: 呼叫 fine-tune 實作
+            match fine_tune::run_nightly_fine_tune() {
+                Ok(_) => println!("[cron] Fine-tuning completed successfully."),
+                Err(e) => println!("[cron][error] Fine-tuning failed: {}", e),
+            }
         })
     }).expect("建立 cron job 失敗");
 

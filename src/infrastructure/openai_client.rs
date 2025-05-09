@@ -1,16 +1,16 @@
 //! OpenAI LLM Client
 //! 從環境變數讀取 API Key，呼叫雲端 OpenAI API
-use std::env;
+// 移除未使用的 std::env 匯入
 
 pub struct OpenAiClient {
     api_key: String,
 }
 
 impl OpenAiClient {
-    pub fn new() -> Self {
-        let api_key = env::var("OPENAI_API_KEY").expect("請先設置 OPENAI_API_KEY 環境變數");
-        Self { api_key }
+    pub fn try_new() -> Option<Self> {
+        std::env::var("OPENAI_API_KEY").ok().map(|key| Self { api_key: key })
     }
+
     pub fn infer(&self, prompt: &str) -> Result<String, String> {
         use std::{thread, time::Duration};
         let client = match reqwest::blocking::Client::builder().timeout(Duration::from_secs(15)).build() {
@@ -66,4 +66,3 @@ impl OpenAiClient {
         }
     }
 }
-
